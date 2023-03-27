@@ -17,6 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for word in result_tuple {
         writeln!(file, "{}", word)?;
     }
+    // TODO: Multithreading!
 
     Ok(())
 }

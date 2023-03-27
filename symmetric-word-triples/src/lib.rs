@@ -34,7 +34,6 @@ pub fn symmetric_word_tuples(
         if solution.len() == grid {
             if matrix_is_symmetric(solution) {
                 let solution_tuple = stringify_chunky_word_list(solution);
-                println!("Found solution: {}", solution_tuple);
                 solution_set.push(solution_tuple);
             }
             return;
