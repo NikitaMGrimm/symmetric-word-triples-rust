@@ -1,5 +1,3 @@
-
-
 use fst::automaton::{Automaton, Str};
 use fst::IntoStreamer;
 pub type ChunkyWord = Vec<String>;

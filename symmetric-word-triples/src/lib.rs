@@ -1,5 +1,3 @@
-
-
 use fst::Set;
 use matrix::matrix_is_symmetric;
 use parser::{stringify_chunky_word_list, ChunkyWord, WordDict, WordFilter};

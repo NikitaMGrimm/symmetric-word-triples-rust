@@ -1,12 +1,6 @@
-
-
-
-use symmetric_word_triples::symmetric_word_tuples;
 use std::io::Write;
-use std::{
-    fs::File,
-    vec,
-};
+use std::{fs::File, vec};
+use symmetric_word_triples::symmetric_word_tuples;
 
 mod matrix;
 mod parser;
