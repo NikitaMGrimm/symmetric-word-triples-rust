@@ -84,11 +84,14 @@ pub fn dir_symmetric_words_range(
             grid_size, chunk_size,
         );
 
-        let result_tuple: Vec<String> =
+        let mut result_tuple: Vec<String> =
             symmetric_words_in_file_mt(&path, grid_size, chunk_size, &threadpool)?;
         if result_tuple.is_empty() {
             continue;
+        } else {
+            result_tuple.sort();
         }
+        
         let file_name = format!("{file_name}_grid{}_chunk{}.txt", grid_size, chunk_size,);
         let output_file_path = output_file_path.join(&file_name);
         if let Ok(file) = std::fs::File::create(&output_file_path) {
