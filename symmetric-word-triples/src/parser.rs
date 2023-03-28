@@ -8,8 +8,7 @@ pub use wordfilter::*;
 
 pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {
     let f = File::open(file_path)?;
-    let reader = BufReader::new(f);
-    for line in reader.lines() {
+    for line in BufReader::new(f).lines() {
         s.push(line?);
     }
     Ok(())
@@ -22,10 +21,10 @@ pub fn chunkify_dict_set(word_dictionary: &WordDict, grid: usize) -> ChunkyWordD
         .collect()
 }
 
-pub fn chunkify(word: &str, grid: usize) -> ChunkyWord {
+pub fn chunkify(word: &str, chunk_size: usize) -> ChunkyWord {
     word.chars()
         .collect::<Vec<char>>()
-        .chunks(grid)
+        .chunks(chunk_size)
         .map(|chunk| chunk.iter().collect())
         .collect()
 }

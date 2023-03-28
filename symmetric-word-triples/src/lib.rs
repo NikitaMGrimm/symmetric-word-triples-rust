@@ -1,12 +1,28 @@
 use fst::Set;
 
 use parser::{WordFilter, WordTupleDict};
-use std::{io::Write, path::Path, thread::available_parallelism};
+use std::{io::Write, path::Path, sync::Arc, thread::available_parallelism};
 use threadpool::ThreadPool;
 
 pub mod matrix;
 pub mod parser;
 pub mod threadpool;
+
+pub fn auto_single_sym_word_sol(
+    input_dictionary: &Path,
+    word: &str,
+    grid_size: usize,
+    chunk_size: usize,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut word_dictionary = vec![];
+    parser::file_vec(&input_dictionary, &mut word_dictionary)?;
+    parser::len_filter(&mut word_dictionary, grid_size * chunk_size);
+    let word_set = Set::from_iter(word_dictionary.clone())?;
+    let solution_set_word = word_set.symmetric_words_single(word, grid_size, chunk_size)?;
+    println!("{:?}", solution_set_word);
+
+    Ok(())
+}
 
 pub fn auto_dir_sym_word_sol(
     input_dir: &Path,
@@ -30,22 +46,6 @@ pub fn auto_dir_sym_word_sol(
         chunk_size_range,
         &threadpool,
     )?;
-
-    Ok(())
-}
-
-pub fn auto_single_sym_word_sol(
-    input_dictionary: &Path,
-    word: &str,
-    grid_size: usize,
-    chunk_size: usize,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let mut word_dictionary = vec![];
-    parser::file_vec(input_dictionary, &mut word_dictionary)?;
-    parser::len_filter(&mut word_dictionary, grid_size * chunk_size);
-    let word_set = Set::from_iter(word_dictionary.clone())?;
-    let solution_set_word = word_set.symmetric_words_single(word, 3, 3)?;
-    println!("{:?}", solution_set_word);
 
     Ok(())
 }
@@ -114,21 +114,42 @@ pub fn symmetric_words_in_file_mt(
     let mut word_dictionary = vec![];
     parser::file_vec(file_path, &mut word_dictionary)?;
     parser::len_filter(&mut word_dictionary, grid * chunk_size);
-    let word_set = Set::from_iter(word_dictionary.clone())?;
+    let word_set = Arc::new(Set::from_iter(word_dictionary.clone())?);
 
     let mut solution_set_file = vec![];
-    // let mut solution: Vec<ChunkyWord> = vec![];
-    // Split it up into lists for each thread.
-
-    // TODO: Make a threadpool to automatically give out tasks. (a task is a solution set for a word (or a partition))
-    // TODO: Put the thread thingy (scope?) here.
-    for word in &word_dictionary {
-        let mut solution_set_word = word_set.symmetric_words_single(word, grid, chunk_size)?;
-        solution_set_file.append(&mut solution_set_word);
+    let size = word_dictionary.len();
+    let (tx, rx) = std::sync::mpsc::channel();
+    for word in word_dictionary {
+        let tx = tx.clone();
+        let word_set = Arc::clone(&word_set);
+        threadpool.execute(move || {
+            let solution_set_word = word_set.symmetric_words_single(&word, grid, chunk_size);
+            tx.send(solution_set_word).unwrap();
+        })
+    }
+    drop(tx);
+    let mut cur = 0;
+    for receiver in rx {
+        solution_set_file.append(&mut receiver?);
+        cur += 1;
+        if cur % 100 == 0 {
+            println!(
+                "{clear}    Finished {:.2}% of file. {} solutions found with grid size {} and chunk size {}",
+                (cur as f64 / size as f64) * 100.0,
+                solution_set_file.len(),
+                grid,
+                chunk_size,
+                clear = "\x1b[1A\x1b[2K",
+            );
+        }
     }
 
-    // join the threads and combine all the results into the solution_set_file
-
-    println!("    {} solutions found.", solution_set_file.len());
+    println!(
+        "{clear}    {} solutions found with grid size {} and chunk size {}",
+        solution_set_file.len(),
+        grid,
+        chunk_size,
+        clear = "\x1b[1A\x1b[2K",
+    );
     Ok(solution_set_file)
 }

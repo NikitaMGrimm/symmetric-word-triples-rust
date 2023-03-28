@@ -52,7 +52,7 @@ impl WordFilter for WordSet {
             return Ok(vec![]);
         }
         let mut solution_set = vec![];
-        let mut chunky_solution_matrix: Vec<ChunkyWord> = vec![parser::chunkify(first_word, grid)];
+        let mut chunky_solution_matrix: Vec<ChunkyWord> = vec![parser::chunkify(first_word, chunk_size)];
         // Define a recursive helper function that performs the backtracking.
         fn backtrack(
             word_set: &WordSet,
