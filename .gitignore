@@ -10,6 +10,4 @@ Cargo.lock
 **/*.rs.bk
 
 # Input test file
-word_dictionary.txt
-result.txt
-test.txt
+/text

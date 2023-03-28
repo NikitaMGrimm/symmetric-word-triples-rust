@@ -3,7 +3,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-mod prefix;
+pub mod prefix;
 pub use prefix::*;
 
 /// Reads the file and returns a vector of strings where each string is a line in the file.
