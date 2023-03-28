@@ -1,25 +1,21 @@
-use std::io::Write;
-use std::thread::available_parallelism;
 use std::path::Path;
-use std::{fs::File, vec};
-use symmetric_word_triples::{symmetric_words, dir_symmetric_words_range};
+use std::thread::available_parallelism;
+
+use symmetric_word_triples::{dir_symmetric_words_range, auto_dir_sym_word_sol, auto_single_sym_word_sol};
 
 mod matrix;
 mod parser;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let text_dir = Path::new("./text");
-    let grid_range = (2,8);
-    let chunk_size_range = (1,8);
-    let input_dir = text_dir.join("input").to_string_lossy().to_string();
-    let output_dir = text_dir.join("output").to_string_lossy().to_string();
+    let text_dir = Path::new("./data");
+    let grid_range = (3, 3);
+    let chunk_size_range = (3, 3);
+    let input_dir = text_dir.join("input");
+    let output_dir = text_dir.join("output");
 
-    let mut threads_available = 1;
-    if let Ok(available) = available_parallelism() {
-        threads_available = available.get();
-    }
+    //auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range, true)?;
 
-    dir_symmetric_words_range(&input_dir, &output_dir, grid_range, chunk_size_range)?;
+    auto_single_sym_word_sol(&input_dir, "gladiator", 3, 3)?;
 
     Ok(())
 }
