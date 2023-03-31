@@ -1,30 +1,45 @@
+use core::panic;
 use std::{
     fs::File,
-    io::{BufRead, BufReader}, path::Path,
+    io::{BufRead, BufReader},
+    path::Path,
 };
+
+use encoding_rs::WINDOWS_1252;
+use encoding_rs_io::DecodeReaderBytesBuilder;
 
 pub mod wordfilter;
 pub use wordfilter::*;
 
 pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {
-    let f = File::open(file_path)?;
-    for line in BufReader::new(f).lines() {
+    let file = File::open(file_path)?;
+    let reader = BufReader::new(
+        DecodeReaderBytesBuilder::new()
+            .encoding(Some(WINDOWS_1252))
+            .build(file),
+    );
+    for line in reader.lines() {
         s.push(line?);
     }
     Ok(())
 }
 
-pub fn chunkify_dict_set(word_dictionary: &WordDict, chunk_size: usize) -> ChunkyWordDict {
+pub fn chunkify_dict_set(
+    word_dictionary: &WordDict,
+    grid_size: usize,
+    chunk_size: usize,
+) -> ChunkyWordDict {
     word_dictionary
         .iter()
         .map(|word| chunkify(word, chunk_size))
+        .filter(|word| word.len() == grid_size)
         .collect()
 }
 
 pub fn chunkify(word: &str, chunk_size: usize) -> ChunkyWord {
     let mut chunked_word = ChunkyWord::new();
     let mut current_chunk = String::with_capacity(chunk_size);
-    
+
     for c in word.chars() {
         if current_chunk.len() == chunk_size {
             chunked_word.push(current_chunk);
@@ -32,11 +47,11 @@ pub fn chunkify(word: &str, chunk_size: usize) -> ChunkyWord {
         }
         current_chunk.push(c);
     }
-    
+
     if !current_chunk.is_empty() {
         chunked_word.push(current_chunk);
     }
-    
+
     chunked_word
 }
 
@@ -70,7 +85,8 @@ pub fn next_prefix(chunky_word_vec: &[ChunkyWord]) -> String {
         }
     }
     for word in chunky_word_vec.iter().take(words) {
-        prefix.push_str(&word[words]);
+        prefix.push_str(word.get(words).unwrap_or_else(|| panic!("
+\nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words},\nchunky: {chunky_word_vec:?}")));
     }
     prefix
 }

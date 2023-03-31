@@ -1,7 +1,6 @@
 use std::path::Path;
-use std::thread::available_parallelism;
 
-use symmetric_word_triples::{dir_symmetric_words_range, auto_dir_sym_word_sol, auto_single_sym_word_sol};
+use symmetric_word_triples::{auto_dir_sym_word_sol};
 
 mod matrix;
 mod parser;
@@ -13,10 +12,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let input_dir = text_dir.join("input");
     let output_dir = text_dir.join("output");
 
-    auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range, true)?;
+    auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range)?;
     //auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range, true)?;
   
-    // TODO: Make another multithreading implementation where each thread gets a chunk of the input file (instead of a single word)
     // TODO: Use hashmaps somehow?? 
         // Maybe every time we get the next_prefix, we add it into a hashmap (key: next_prefix, value: Option<set of words with prefix>)
         // Because we might get the same necessary prefix multiple times, we can just retrieve the set if it already exists!
@@ -35,5 +33,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // TODO: In the hot part, iterate over a finished chunky word dict instead of calling chunkify for each word.
         // Pretty much just pre-chunkify everything for each file beforehand and only accept chunky words everywhere.
+
+    // get should return customoption<option, maybe new enum for option that can be unwrapped to differentiate between not found and empty set
+    // make new matrix struct for chunky to avoid indirection, make methods to work on flat vector with offsets
+    // inlining
+    // link time optimization
+    // install cargo bloat
+    // trie instead of hashmap and fst set!!! Two in one improvement. Then you can also make the entire programm only accept chunky words. No conversion needed!!!
     Ok(())
 }

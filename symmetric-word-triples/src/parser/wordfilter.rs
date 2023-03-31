@@ -1,3 +1,8 @@
+use std::hash::{BuildHasher, BuildHasherDefault};
+use std::sync::Arc;
+
+use ahash::{AHasher, RandomState};
+
 use dashmap::DashMap;
 use fst::automaton::{Automaton, Str};
 use fst::{IntoStreamer, Set};
@@ -15,24 +20,49 @@ pub trait WordFilter {
     fn prefix_filter(&self, prefix: &str) -> fst::Result<WordDict>;
     fn prefix_filter_chunkify(&self, prefix: &str) -> fst::Result<ChunkyWordDict>;
     fn symmetric_words_single(&self, dictionary_word: &str) -> fst::Result<WordTupleDict>;
+    fn symmetric_words_multiple(&self, words: &[String]) -> WordTupleDict;
 }
 
 pub struct PrefixMap {
     pub word_set: WordSet,
     grid_size: usize,
     chunk_size: usize,
-    table: DashMap<String, bool>,
+    table: DashMap<String, Vec<Arc<ChunkyWord>>, BuildHasherDefault<AHasher>>,
 }
 
 impl PrefixMap {
     pub fn new(word_dict: WordDict, grid_size: usize, chunk_size: usize) -> PrefixMap {
         let word_set = Set::from_iter(word_dict).expect("Word set should have been made.");
+        // Make the dashmap with the aHash hasher.
+        let dashmap: DashMap<_, _, BuildHasherDefault<AHasher>> = DashMap::default();
         PrefixMap {
             word_set,
             grid_size,
             chunk_size,
-            table: DashMap::new(),
+            table: dashmap,
         }
+    }
+
+    pub fn get(&self, key: &str) -> Option<Vec<Arc<ChunkyWord>>> {
+        self.table.get(key).map(|v| v.value().clone())
+    }
+
+    pub fn insert_prefix_and_get(&self, key: &str) -> Option<Vec<Arc<ChunkyWord>>> {
+        // First check if the key is already in the table.
+        if let Some(chunky_words) = self.get(key) {
+            return Some(chunky_words);
+        }
+
+        let chunky_words = self.prefix_filter_chunkify(key).unwrap();
+        let chunky_words = chunky_words
+            .into_iter()
+            .map(|chunky_word| Arc::new(chunky_word))
+            .collect::<Vec<_>>();
+
+        self.table.insert(key.to_string(), chunky_words.clone());
+        // for debuggin we check the size of the table.
+        // println!("table size: {}", self.table.len());
+        Some(chunky_words)
     }
 }
 
@@ -52,15 +82,14 @@ impl WordFilter for PrefixMap {
         // Filter the words that begin with the prefix.
         let words = self.prefix_filter(prefix)?;
         // Chunkify the words.
-        Ok(super::chunkify_dict_set(&words, self.chunk_size))
+        let mut chunkified_dict = super::chunkify_dict_set(&words, self.grid_size, self.chunk_size);
+        chunkified_dict.retain(|chunky| chunky.len() == self.chunk_size);
+        Ok(chunkified_dict)
     }
 
     /// Takes the first word of a matrix and it return all possible solutions with
     /// that word in the first row.
-    fn symmetric_words_single(
-        &self,
-        first_word: &str,
-    ) -> fst::Result<WordTupleDict> {
+    fn symmetric_words_single(&self, first_word: &str) -> fst::Result<WordTupleDict> {
         if self.grid_size == 0 {
             return Ok(vec![]);
         }
@@ -84,25 +113,28 @@ impl WordFilter for PrefixMap {
                 return;
             }
             let next_prefix = parser::next_prefix(chunky_solution_matrix);
-            let chunkified_words = prefix_map
-                .prefix_filter_chunkify(&next_prefix)
-                .unwrap();
+            // Use the prefix map to get the chunkified words.
+            let chunkified_words = prefix_map.insert_prefix_and_get(&next_prefix).unwrap();
+
             for chunky_word in chunkified_words {
-                chunky_solution_matrix.push(chunky_word.clone());
-                backtrack(
-                    prefix_map,
-                    chunky_solution_matrix,
-                    solution_set,
-                );
+                chunky_solution_matrix.push(chunky_word.to_vec());
+                backtrack(prefix_map, chunky_solution_matrix, solution_set);
                 chunky_solution_matrix.pop();
             }
         }
         // Start the backtracking with an empty solution.
-        backtrack(
-            self,
-            &mut chunky_solution_matrix,
-            &mut solution_set,
-        );
+        backtrack(self, &mut chunky_solution_matrix, &mut solution_set);
         Ok(solution_set)
+    }
+
+    fn symmetric_words_multiple(&self, words: &[String]) -> WordTupleDict {
+        let mut solution_set = vec![];
+        for first_word in words {
+            let solutions = self
+                .symmetric_words_single(first_word)
+                .expect("Should have added a new solution for a word.");
+            solution_set.extend(solutions);
+        }
+        solution_set
     }
 }
