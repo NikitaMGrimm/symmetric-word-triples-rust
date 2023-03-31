@@ -1,22 +1,20 @@
 ## TODOs
-- Diagonal optimization? (If you have a solution, you can vary the diagonal chunks to get more solutions)
-
-- Trie instead of hashmap and fst set!!! Two in one improvement. Then you can also make the entire program only accept chunky words. No conversion needed!!!
+- Make the api better. Clean up. 
+  - Trie instead of hashmap and fst set!!! Two in one improvement. Then you can also make the entire program only accept chunky words. No conversion needed!!!
+    - Make the trie use chunky words instead of strings. Each chunk is a node.
   - Will be tricky to implement with diagonal optimization. Might need to make another fst set for the rare regex searches with wildcards.
+  - Make new matrix struct for chunky to avoid indirection, make methods to work on flat vector with offsets
+  - Make everything use slices instead of vectors. 
+  - In the hot part, iterate over a finished chunky word dict instead of calling chunkify for each word.
+  - Pretty much just pre-chunkify everything for each file beforehand and only accept chunky words everywhere.
+
+- Diagonal optimization? (If you have a solution, you can vary the diagonal chunks to get more solutions) VERY HARD!
   
 - Dashset for solution_set_file (or similar)
   - Instantly add into hashmap if you have a solution instead of collecting and appending.
   - Also: Somehow dump the results into a file during the computation (instead of waiting for the whole thing to finish) (high RAM usage)
 
-- In the hot part, iterate over a finished chunky word dict instead of calling chunkify for each word.
-  - Pretty much just pre-chunkify everything for each file beforehand and only accept chunky words everywhere.
-
-- Make new matrix struct for chunky to avoid indirection, make methods to work on flat vector with offsets
-
 - Install cargo bloat
-
-- Get should return customoption<option, maybe new enum for option that can be unwrapped to differentiate between not found and empty set
-  - Might not be necessary because empty vectors are not allocated
 
 Diagonal optimization:
 0.
