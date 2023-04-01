@@ -14,8 +14,6 @@
   - Instantly add into hashmap if you have a solution instead of collecting and appending.
   - Also: Somehow dump the results into a file during the computation (instead of waiting for the whole thing to finish) (high RAM usage)
 
-- Install cargo bloat
-
 Diagonal optimization:
 0.
 split words into:  prefix + suffix
