@@ -84,9 +84,11 @@ pub fn next_prefix(chunky_word_vec: &[ChunkyWord]) -> String {
             return prefix;
         }
     }
+
     for word in chunky_word_vec.iter().take(words) {
         prefix.push_str(word.get(words).unwrap_or_else(|| panic!("
 \nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words},\nchunky: {chunky_word_vec:?}")));
     }
+    // println!("{:?}", prefix);
     prefix
 }

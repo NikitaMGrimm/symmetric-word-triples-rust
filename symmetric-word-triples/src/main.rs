@@ -7,8 +7,8 @@ mod parser;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text_dir = Path::new("./data");
-    let grid_range = (3, 3);
-    let chunk_size_range = (3, 3);
+    let grid_range = (5, 5);
+    let chunk_size_range = (1, 1);
     let input_dir = text_dir.join("input");
     let output_dir = text_dir.join("output");
 

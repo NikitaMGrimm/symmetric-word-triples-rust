@@ -83,7 +83,8 @@ impl WordFilter for PrefixMap {
         let words = self.prefix_filter(prefix)?;
         // Chunkify the words.
         let mut chunkified_dict = super::chunkify_dict_set(&words, self.grid_size, self.chunk_size);
-        chunkified_dict.retain(|chunky| chunky.len() == self.chunk_size);
+        chunkified_dict.retain(|chunky| chunky.len() == self.grid_size);
+        // println!("chunkified_dict: {:?}", chunkified_dict);
         Ok(chunkified_dict)
     }
 
