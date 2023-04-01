@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use symmetric_word_triples::auto_dir_sym_word_sol;
+use symmetric_word_triples::dir_symmetric_words_range;
 
 pub fn benchmark_dict_big(c: &mut Criterion) {
     let text_dir = Path::new("../data");
@@ -12,7 +12,7 @@ pub fn benchmark_dict_big(c: &mut Criterion) {
 
     c.bench_function("dir symmetry bench", move |b| {
         b.iter(|| {
-            auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range).unwrap()
+            dir_symmetric_words_range(&input_dir, &output_dir, grid_range, chunk_size_range).unwrap()
         })
     });
 }

@@ -1,15 +1,13 @@
-use core::panic;
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-    path::Path,
-};
+use std::{path::Path, fs::File, io::{BufReader, BufRead}};
 
 use encoding_rs::WINDOWS_1252;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
+use self::wordfilter::{WordDict, ChunkyWordDict, ChunkyWord};
+
+pub mod matrix;
+pub mod token;
 pub mod wordfilter;
-pub use wordfilter::*;
 
 pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {
     let file = File::open(file_path)?;

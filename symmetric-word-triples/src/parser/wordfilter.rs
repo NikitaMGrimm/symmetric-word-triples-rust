@@ -1,20 +1,22 @@
-use std::hash::{BuildHasher, BuildHasherDefault};
+use std::hash::BuildHasherDefault;
 use std::sync::Arc;
 
-use ahash::{AHasher, RandomState};
+use ahash::AHasher;
 
 use dashmap::DashMap;
 use fst::automaton::{Automaton, Str};
 use fst::{IntoStreamer, Set};
 
-use crate::matrix::matrix_is_symmetric;
-use crate::parser;
-use crate::parser::stringify_chunky_word_list;
+use crate::parser::{self, stringify_chunky_word_list};
+use crate::parser::matrix::matrix_is_symmetric;
+
 pub type ChunkyWord = Vec<String>;
 pub type WordDict = Vec<String>;
 pub type ChunkyWordDict = Vec<ChunkyWord>;
 pub type WordSet = fst::Set<Vec<u8>>;
 pub type WordTupleDict = Vec<String>;
+
+pub type Hr = BuildHasherDefault<AHasher>;
 
 pub trait WordFilter {
     fn prefix_filter(&self, prefix: &str) -> fst::Result<WordDict>;
@@ -27,14 +29,14 @@ pub struct PrefixMap {
     pub word_set: WordSet,
     grid_size: usize,
     chunk_size: usize,
-    table: DashMap<String, Vec<Arc<ChunkyWord>>, BuildHasherDefault<AHasher>>,
+    table: DashMap<String, Vec<Arc<ChunkyWord>>, Hr>,
 }
 
 impl PrefixMap {
     pub fn new(word_dict: WordDict, grid_size: usize, chunk_size: usize) -> PrefixMap {
         let word_set = Set::from_iter(word_dict).expect("Word set should have been made.");
         // Make the dashmap with the aHash hasher.
-        let dashmap: DashMap<_, _, BuildHasherDefault<AHasher>> = DashMap::default();
+        let dashmap: DashMap<_, _, Hr> = DashMap::default();
         PrefixMap {
             word_set,
             grid_size,
@@ -56,7 +58,7 @@ impl PrefixMap {
         let chunky_words = self.prefix_filter_chunkify(key).unwrap();
         let chunky_words = chunky_words
             .into_iter()
-            .map(|chunky_word| Arc::new(chunky_word))
+            .map(Arc::new)
             .collect::<Vec<_>>();
 
         self.table.insert(key.to_string(), chunky_words.clone());

@@ -1,9 +1,6 @@
 use std::path::Path;
 
-use symmetric_word_triples::{dir_symmetric_words_range};
-
-mod matrix;
-mod parser;
+use symmetric_word_triples::dir_symmetric_words_range;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text_dir = Path::new("./data");

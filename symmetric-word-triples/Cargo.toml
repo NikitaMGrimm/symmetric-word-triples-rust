@@ -8,6 +8,7 @@ license = "MIT"
 
 [dependencies]
 fst = "0.4.7"
+radix_trie = "0.2.1"
 
 dashmap = "5.4.0"
 ahash = "0.8.3"

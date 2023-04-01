@@ -1,20 +1,16 @@
-use mimalloc::MiMalloc;
+use std::sync::Mutex;
+use std::{path::Path, sync::Arc};
+use std::io::Write;
 
+use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc; // Improves performance by 18%
 
-use parser::{WordFilter, WordTupleDict};
-use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
-use std::{
-    io::Write,
-    path::Path,
-    sync::{Arc, Mutex},
-};
-
-use crate::parser::PrefixMap;
-
-pub mod matrix;
 pub mod parser;
+use parser::wordfilter::WordTupleDict;
+use rayon::prelude::*;
+
+use crate::parser::wordfilter::{PrefixMap, WordFilter};
 
 pub fn auto_single_sym_word_sol(
     input_dictionary: &Path,
