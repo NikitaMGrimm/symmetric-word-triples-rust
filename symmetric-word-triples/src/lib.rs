@@ -32,17 +32,6 @@ pub fn auto_single_sym_word_sol(
     Ok(())
 }
 
-pub fn auto_dir_sym_word_sol(
-    input_dir: &Path,
-    output_dir: &Path,
-    grid_range: (usize, usize),
-    chunk_size_range: (usize, usize),
-) -> Result<(), Box<dyn std::error::Error>> {
-    dir_symmetric_words_range(input_dir, output_dir, grid_range, chunk_size_range)?;
-
-    Ok(())
-}
-
 pub fn dir_symmetric_words_range(
     input_dir: &Path,
     output_dir: &Path,

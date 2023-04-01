@@ -1,18 +1,18 @@
 use std::path::Path;
 
-use symmetric_word_triples::{auto_dir_sym_word_sol};
+use symmetric_word_triples::{dir_symmetric_words_range};
 
 mod matrix;
 mod parser;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text_dir = Path::new("./data");
-    let grid_range = (5, 5);
+    let grid_range = (9, 9);
     let chunk_size_range = (1, 1);
     let input_dir = text_dir.join("input");
     let output_dir = text_dir.join("output");
 
-    auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range)?;
+    dir_symmetric_words_range(&input_dir, &output_dir, grid_range, chunk_size_range)?;
     //auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range, true)?;
   
     // TODO: Use hashmaps somehow?? 

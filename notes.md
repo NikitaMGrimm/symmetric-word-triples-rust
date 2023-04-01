@@ -64,3 +64,12 @@ c e f ? -> last row -> return the possible suffixes of cef (which we have) becau
 
 END:
 We have gotten the map from 3.2 and we have the solutions for all the ? in every row. Iterate over all of them. Add them to the solution set.
+
+Scuffed approach:
+Do the thing I now do but every time I get the next prefix words, replace the diagonal chunk with a placeholder like ??? and put all the chunks that were
+replaced into a set to get all solutions later on. While you replace the chunk with ???, put them into a hashset to quickly remove duplicates.
+Make it a hashmap from 
+
+Then iterate over this and do the usual, get the next prefix, etc...
+
+Then after you have found a solution, iterate over all the ??? and replace them with the possible chunks that we remembered earlier.
