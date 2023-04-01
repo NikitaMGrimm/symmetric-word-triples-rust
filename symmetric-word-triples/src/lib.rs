@@ -52,16 +52,23 @@ pub fn dir_symmetric_words_range(
         .map(|p| p.path())
         .flat_map(|path| grid_chunk_iter.clone().map(move |gc| (path.clone(), gc)))
     {
-        let file_name = path
+        let dir_name = path
             .file_stem()
             .map(|stem| stem.to_string_lossy().replace(' ', "_"))
             .unwrap_or_default();
-        let output_file_path = output_dir.join(&file_name);
-        std::fs::create_dir(&output_file_path).ok();
+        let output_dir_path = output_dir.join(&dir_name);
+        
+        let file = format!("{dir_name}_grid{}_chunk{}.txt", grid_size, chunk_size,);
+        let output_file_path = output_dir_path.join(&file);
+        if output_file_path.exists() && output_file_path.metadata().unwrap().len() > 0 {
+            println!("File \"{file}\" exists already");
+            continue;
+        }
 
-        // missing
+        std::fs::create_dir(&output_dir_path).ok();
+
         println!(
-            "File name: {file_name} Grid: {}, Chunk size: {}",
+            "File name: {file} Grid: {}, Chunk size: {}",
             grid_size, chunk_size,
         );
 
@@ -73,8 +80,6 @@ pub fn dir_symmetric_words_range(
             result_tuple.sort_unstable();
         }
 
-        let file_name = format!("{file_name}_grid{}_chunk{}.txt", grid_size, chunk_size,);
-        let output_file_path = output_file_path.join(&file_name);
         if let Ok(file) = std::fs::File::create(&output_file_path) {
             let mut file = std::io::BufWriter::new(file);
             for word in result_tuple {
@@ -107,7 +112,7 @@ pub fn symmetric_words_in_file_mt(
     let size = word_dictionary.len();
     let cur = Arc::new(Mutex::new(0));
     let solution_count = Arc::new(Mutex::new(0));
-    let update_freq = size / 345;
+    let update_freq = (size / 345).max(1);
     let solution_set_file: Vec<_> = word_dictionary
         .par_iter()
         .flat_map_iter(|words| {
