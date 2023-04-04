@@ -1,6 +1,5 @@
 ## TODOs
 - Will be tricky to implement with diagonal optimization. Might need to make another fst set for the rare regex searches with wildcards.
-- Make everything use slices instead of vectors. 
 
 - Diagonal optimization? (If you have a solution, you can vary the diagonal chunks to get more solutions) VERY HARD!
   
@@ -8,6 +7,8 @@
   - Instantly add into hashmap if you have a solution instead of collecting and appending.
   - Also: Somehow dump the results into a file during the computation (instead of waiting for the whole thing to finish) (high RAM usage)
   - Somehow save your state in the middle of the computation (so you can continue later on)
+  
+- Use as many references as possible for TokenWords and TokenMatrixes.
 
 Diagonal optimization:
 0.

@@ -105,6 +105,9 @@ impl PrefixMap {
     }
 
     #[inline]
+    pub fn compress_words(&self)
+
+    #[inline]
     pub fn stringify_token_matrix(&self, tkn_matrix: TokenMatrix) -> String {
         self.tokens
             .stringify_token_matrix(tkn_matrix, self.chunk_size)
