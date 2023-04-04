@@ -3,12 +3,13 @@ use std::{path::Path, fs::File, io::{BufReader, BufRead}};
 use encoding_rs::WINDOWS_1252;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
-use self::wordfilter::{WordDict, ChunkyWordDict, ChunkyWord};
+use self::{wordfilter::{WordDict, ChunkyWordDict, ChunkyWord}, matrix::TokenMatrix, token::TokenWord};
 
 pub mod matrix;
 pub mod token;
 pub mod wordfilter;
 
+#[inline]
 pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {
     let file = File::open(file_path)?;
     let reader = BufReader::new(
@@ -22,7 +23,8 @@ pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn chunkify_dict_set(
+#[inline]
+pub fn chunkify_dict(
     word_dictionary: &WordDict,
     grid_size: usize,
     chunk_size: usize,
@@ -34,6 +36,7 @@ pub fn chunkify_dict_set(
         .collect()
 }
 
+#[inline]
 pub fn chunkify(word: &str, chunk_size: usize) -> ChunkyWord {
     let mut chunked_word = ChunkyWord::new();
     let mut current_chunk = String::with_capacity(chunk_size);
@@ -53,39 +56,25 @@ pub fn chunkify(word: &str, chunk_size: usize) -> ChunkyWord {
     chunked_word
 }
 
+#[inline]
 pub fn len_filter(word_dictionary: &mut WordDict, grid: usize) {
     word_dictionary.retain(|word| word.len() == grid);
     word_dictionary.sort_unstable();
 }
 
-pub fn stringify_chunky_word(chunky_words: &ChunkyWord) -> String {
-    chunky_words.join("")
-}
-
-pub fn stringify_chunky_word_list(chunky_words: &ChunkyWordDict) -> String {
-    // Chunky word count * chunk count * character count + spaces (chunky word count - 1)
-    let capacity = chunky_words.len() * (chunky_words[0].len() * chunky_words[0][0].len() + 1) - 1;
-    let mut output = String::with_capacity(capacity); // assuming an average chunky word length of 10 characters
-    output.push_str(&stringify_chunky_word(&chunky_words[0]));
-    for chunky_word in &chunky_words[1..] {
-        output.push(' ');
-        output.push_str(&stringify_chunky_word(chunky_word));
+#[inline]
+pub fn next_prefix(solution_matrix: &TokenMatrix) -> TokenWord {
+    let mut prefix = TokenWord::new();
+    let words = solution_matrix.len();
+    let first_row = solution_matrix.get_row(0);
+    if first_row.len() <= words {
+        return prefix;
     }
-    output
-}
+    for word in solution_matrix.rows() {
+        let prefix_piece = word.get(words).unwrap_or_else(|| panic!("
+        \nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words}"));
 
-pub fn next_prefix(chunky_word_vec: &[ChunkyWord]) -> String {
-    let mut prefix = String::new();
-    let words = chunky_word_vec.len();
-    if let Some(word) = chunky_word_vec.get(0) {
-        if word.len() <= words {
-            return prefix;
-        }
-    }
-
-    for word in chunky_word_vec.iter().take(words) {
-        prefix.push_str(word.get(words).unwrap_or_else(|| panic!("
-\nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words},\nchunky: {chunky_word_vec:?}")));
+        prefix.push(prefix_piece.clone());
     }
     // println!("{:?}", prefix);
     prefix

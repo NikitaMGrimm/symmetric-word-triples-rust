@@ -5,8 +5,8 @@ use symmetric_word_triples::dir_symmetric_words_range;
 
 pub fn benchmark_dict_big(c: &mut Criterion) {
     let text_dir = Path::new("../data");
-    let grid_range = (3, 3);
-    let chunk_size_range = (3, 3);
+    let grid_range = (2, 4);
+    let chunk_size_range = (3, 4);
     let input_dir = text_dir.join("input");
     let output_dir = text_dir.join("output");
 
@@ -19,7 +19,7 @@ pub fn benchmark_dict_big(c: &mut Criterion) {
 criterion_group! {
     name = benches;
     // This can be any expression that returns a `Criterion` object.
-    config = Criterion::default().sample_size(30);
+    config = Criterion::default().sample_size(10);
     targets = benchmark_dict_big
 }
 criterion_main!(benches);

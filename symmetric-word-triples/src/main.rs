@@ -1,17 +1,17 @@
 use std::path::Path;
 
-use symmetric_word_triples::dir_symmetric_words_range;
+use symmetric_word_triples::{dir_symmetric_words_range, auto_single_sym_word_sol};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text_dir = Path::new("./data");
-    let grid_range = (12, 12);
-    let chunk_size_range = (1, 1);
+    let grid_range = (3, 3);
+    let chunk_size_range = (3, 3);
     let input_dir = text_dir.join("input");
     let output_dir = text_dir.join("output");
 
     dir_symmetric_words_range(&input_dir, &output_dir, grid_range, chunk_size_range)?;
-    //auto_dir_sym_word_sol(&input_dir, &output_dir, grid_range, chunk_size_range, true)?;
-  
+    //auto_single_sym_word_sol(&input_dir.join("words_alpha.txt"), "chapelman", 3, 3)?;
+
     // TODO: Use hashmaps somehow?? 
         // Maybe every time we get the next_prefix, we add it into a hashmap (key: next_prefix, value: Option<set of words with prefix>)
         // Because we might get the same necessary prefix multiple times, we can just retrieve the set if it already exists!
@@ -23,7 +23,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Make a prerun where you cache the prefixes of the first word before finding solutions.
     // TODO: Diagonal optimization? (If you have a solution, you can vary the diagonal chunks to get more solutions)
 
-    // TODO: fxhash or other hash algorithm thats faster
     // TODO: dashset for solution_set_file (or similar)
         // Instantly add into hashmap if you have a solution instead of collecting and appending.
         // Also: Somehow dump the results into a file during the computation (instead of waiting for the whole thing to finish) (high ram usage)
