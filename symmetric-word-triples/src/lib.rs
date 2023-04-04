@@ -1,17 +1,16 @@
-use std::io::Write;
-use std::sync::Mutex;
-use std::{path::Path, sync::Arc};
+pub mod parser;
 
 use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc; // Improves performance by 18%
 
-pub mod parser;
+use crate::parser::wordfilter::{PrefixMap, WordFilter};
 use parser::token::TokenWord;
 use parser::wordfilter::WordTupleDict;
 use rayon::prelude::*;
-
-use crate::parser::wordfilter::{PrefixMap, WordFilter};
+use std::io::Write;
+use std::sync::Mutex;
+use std::{path::Path, sync::Arc};
 
 pub fn auto_single_sym_word_sol(
     dictionary_file: &Path,
@@ -111,7 +110,7 @@ pub fn symmetric_words_in_file_mt(
     file_path: &Path,
     grid_size: usize,
     chunk_size: usize,
-) -> fst::Result<WordTupleDict> {
+) -> Result<WordTupleDict, Box<dyn std::error::Error>> {
     if grid_size == 0 {
         return Ok(vec![]);
     }

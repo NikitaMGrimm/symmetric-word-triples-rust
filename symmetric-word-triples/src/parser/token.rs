@@ -1,7 +1,6 @@
+use super::{matrix::TokenMatrix, wordfilter::Hr};
 use dashmap::DashMap;
 use radix_trie::TrieKey;
-
-use super::{matrix::TokenMatrix, wordfilter::Hr};
 
 pub type TknSize = u16;
 

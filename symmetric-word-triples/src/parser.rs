@@ -1,21 +1,19 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-    path::Path,
-};
-
-use encoding_rs::WINDOWS_1252;
-use encoding_rs_io::DecodeReaderBytesBuilder;
+pub mod matrix;
+pub mod token;
+pub mod wordfilter;
 
 use self::{
     matrix::TokenMatrix,
     token::TokenWord,
     wordfilter::{ChunkyWord, ChunkyWordDict, WordDict},
 };
-
-pub mod matrix;
-pub mod token;
-pub mod wordfilter;
+use encoding_rs::WINDOWS_1252;
+use encoding_rs_io::DecodeReaderBytesBuilder;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    path::Path,
+};
 
 #[inline]
 pub fn file_vec(file_path: &Path, s: &mut WordDict) -> std::io::Result<()> {

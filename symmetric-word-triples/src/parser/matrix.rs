@@ -1,6 +1,5 @@
-use std::fmt::Debug;
-
 use super::token::{Token, TokenWord};
+use std::fmt::Debug;
 
 #[derive(Hash, Clone, Debug, PartialEq, Eq)]
 pub struct TokenMatrix {

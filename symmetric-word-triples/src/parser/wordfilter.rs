@@ -1,31 +1,23 @@
-use std::hash::BuildHasherDefault;
-
-use std::sync::Arc;
-
-use ahash::AHasher;
-
-use dashmap::DashMap;
-
-use radix_trie::{Trie, TrieCommon};
-
+use super::token::{TokenWord, Tokens};
 use crate::parser::matrix::TokenMatrix;
 use crate::parser::{self};
-
-use super::token::{TokenWord, Tokens};
+use ahash::AHasher;
+use dashmap::DashMap;
+use radix_trie::{Trie, TrieCommon};
+use std::hash::BuildHasherDefault;
+use std::sync::Arc;
 
 pub type ChunkyWord = Vec<String>;
 pub type WordDict = Vec<String>;
 pub type ChunkyWordDict = Vec<ChunkyWord>;
-pub type WordSet = fst::Set<Vec<u8>>;
 pub type WordTupleDict = Vec<String>;
-
 pub type Hr = BuildHasherDefault<AHasher>;
 
 pub trait WordFilter {
     fn symmetric_words_single(
         &self,
         dictionary_word: TokenWord,
-    ) -> fst::Result<Vec<Arc<TokenMatrix>>>;
+    ) -> Result<Vec<Arc<TokenMatrix>>, String>;
 }
 
 pub struct PrefixMap {
@@ -128,12 +120,12 @@ impl WordFilter for PrefixMap {
     /// Takes the first word of a matrix and it return all possible solutions with
     /// that word in the first row.
     #[inline]
-    fn symmetric_words_single(&self, word: TokenWord) -> fst::Result<Vec<Arc<TokenMatrix>>> {
+    fn symmetric_words_single(&self, word: TokenWord) -> Result<Vec<Arc<TokenMatrix>>, String> {
         if self.grid_size == 0 {
             return Ok(vec![]);
         }
         let mut solution_set = vec![];
-        let mut solution_matrix: TokenMatrix = TokenMatrix::new(self.grid_size);
+        let mut solution_matrix = TokenMatrix::new(self.grid_size);
         solution_matrix.push(word).unwrap();
 
         fn backtrack(
