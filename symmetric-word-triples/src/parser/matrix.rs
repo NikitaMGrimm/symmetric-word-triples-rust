@@ -37,7 +37,6 @@ impl TokenMatrix {
             );
             return Err(error);
         }
-
         self.try_extend(word.into_iter())
     }
 
