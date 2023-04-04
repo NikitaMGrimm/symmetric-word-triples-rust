@@ -11,7 +11,7 @@ fn get_matrix_inbound_unset() {
 fn get_matrix_outbound_unset() {
     let tkn_matrix = TokenMatrix::new(3);
 
-    let outbound = tkn_matrix.get(3, 3);
+    let _outbound = tkn_matrix.get(3, 3);
 }
 
 #[test]
@@ -37,7 +37,7 @@ fn matrix_insert_and_get_outbound() {
     tkn_matrix.insert(1, 0, Token(2));
     tkn_matrix.insert(1, 1, Token(3));
 
-    let outbound = tkn_matrix.get(2, 2);
+    let _outbound = tkn_matrix.get(2, 2);
 }
 
 #[test]
@@ -71,7 +71,7 @@ fn matrix_get_row_outbound() {
     tkn_matrix.insert(1, 0, Token(2));
     tkn_matrix.insert(1, 1, Token(3));
 
-    let outbound = tkn_matrix.get_row(2);
+    let _outbound = tkn_matrix.get_row(2);
 }
 
 #[test]

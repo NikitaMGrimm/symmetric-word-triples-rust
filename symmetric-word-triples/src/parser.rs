@@ -1,9 +1,17 @@
-use std::{path::Path, fs::File, io::{BufReader, BufRead}};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    path::Path,
+};
 
 use encoding_rs::WINDOWS_1252;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 
-use self::{wordfilter::{WordDict, ChunkyWordDict, ChunkyWord}, matrix::TokenMatrix, token::TokenWord};
+use self::{
+    matrix::TokenMatrix,
+    token::TokenWord,
+    wordfilter::{ChunkyWord, ChunkyWordDict, WordDict},
+};
 
 pub mod matrix;
 pub mod token;
@@ -71,10 +79,14 @@ pub fn next_prefix(solution_matrix: &TokenMatrix) -> TokenWord {
         return prefix;
     }
     for word in solution_matrix.rows() {
-        let prefix_piece = word.get(words).unwrap_or_else(|| panic!("
-        \nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words}"));
+        let prefix_piece = word.get(words).unwrap_or_else(|| {
+            panic!(
+                "
+        \nCan't calculate the next prefix. Out of bounds.\nWord: {word:?},\nwords: {words}"
+            )
+        });
 
-        prefix.push(prefix_piece.clone());
+        prefix.push(*prefix_piece);
     }
     // println!("{:?}", prefix);
     prefix

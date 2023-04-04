@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let output_dir = text_dir.join("output");
 
     dir_symmetric_words_range(&input_dir, &output_dir, grid_range, chunk_size_range)?;
-    //auto_single_sym_word_sol(&input_dir.join("words_alpha.txt"), "chapelman", 3, 3)?;
+    auto_single_sym_word_sol(&input_dir.join("words_alpha.txt"), "gladiator", 3, 3)?;
 
     // TODO: Use hashmaps somehow?? 
         // Maybe every time we get the next_prefix, we add it into a hashmap (key: next_prefix, value: Option<set of words with prefix>)
@@ -32,9 +32,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // get should return customoption<option, maybe new enum for option that can be unwrapped to differentiate between not found and empty set
     // make new matrix struct for chunky to avoid indirection, make methods to work on flat vector with offsets
-    // inlining
-    // link time optimization
-    // install cargo bloat
-    // trie instead of hashmap and fst set!!! Two in one improvement. Then you can also make the entire programm only accept chunky words. No conversion needed!!!
     Ok(())
 }

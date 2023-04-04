@@ -7,11 +7,10 @@ use mimalloc::MiMalloc;
 static GLOBAL: MiMalloc = MiMalloc; // Improves performance by 18%
 
 pub mod parser;
-use parser::token::{TokenWord, Tokens};
+use parser::token::TokenWord;
 use parser::wordfilter::WordTupleDict;
 use rayon::prelude::*;
 
-use crate::parser::token::Token;
 use crate::parser::wordfilter::{PrefixMap, WordFilter};
 
 pub fn auto_single_sym_word_sol(
@@ -130,8 +129,7 @@ pub fn symmetric_words_in_file_mt(
         use_table,
     ));
 
-    let word_dictionary = prefix_map
-        .get_prefix_words(&TokenWord::new());
+    let word_dictionary = prefix_map.get_prefix_words(&TokenWord::new());
 
     let size = word_dictionary.len();
     let cur = Arc::new(Mutex::new(0));

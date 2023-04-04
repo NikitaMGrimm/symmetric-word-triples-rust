@@ -1,20 +1,17 @@
 use std::hash::BuildHasherDefault;
-use std::iter;
+
 use std::sync::Arc;
 
 use ahash::AHasher;
 
 use dashmap::DashMap;
-use fst::automaton::{Automaton, Str};
-use fst::{IntoStreamer, Set};
+
 use radix_trie::{Trie, TrieCommon};
-use rayon::prelude::*;
-use rayon::vec;
 
 use crate::parser::matrix::TokenMatrix;
 use crate::parser::{self};
 
-use super::token::{Token, TokenWord, Tokens};
+use super::token::{TokenWord, Tokens};
 
 pub type ChunkyWord = Vec<String>;
 pub type WordDict = Vec<String>;
@@ -80,7 +77,7 @@ impl PrefixMap {
     /// Returns an iterator over all words with the given prefix.
     #[inline]
     pub fn get_prefix_words(&self, prefix: &TokenWord) -> Vec<Arc<TokenWord>> {
-        let use_table = self.use_table;
+        let _use_table = self.use_table;
 
         let prefixes = self
             .trie

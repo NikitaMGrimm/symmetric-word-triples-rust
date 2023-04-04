@@ -42,7 +42,7 @@ impl TokenMatrix {
         self.try_extend(word.into_iter())
     }
 
-    /// Pop a row from the matrix. 
+    /// Pop a row from the matrix.
     /// Will be unpredictable if you have used insert to insert into an unused row.
     #[inline]
     pub fn pop(&mut self) -> Option<Vec<Token>> {
@@ -147,4 +147,3 @@ impl TokenMatrix {
         self.matrix.chunks(self.capacity())
     }
 }
-

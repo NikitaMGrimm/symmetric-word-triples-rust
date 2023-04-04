@@ -48,7 +48,7 @@ impl Tokens {
     #[inline]
     pub fn insert(&mut self, s: String) -> Token {
         if self.encode.contains_key(&s) {
-            return self.encode.get(&s).unwrap().value().clone();
+            return *self.encode.get(&s).unwrap().value();
         }
 
         let new_tkn = Token(self.len());
@@ -67,7 +67,7 @@ impl Tokens {
     /// Convert a token matrix into a string.
     #[inline]
     pub fn stringify_token_matrix(&self, tkn_matrix: TokenMatrix, chunk_size: usize) -> String {
-        let capacity = tkn_matrix.capacity().pow(2) * chunk_size + tkn_matrix.capacity() - 1; 
+        let capacity = tkn_matrix.capacity().pow(2) * chunk_size + tkn_matrix.capacity() - 1;
         let mut output = String::with_capacity(capacity); // TODO: Check if this works like this.
 
         let mut word_rows_it = tkn_matrix.rows();
@@ -103,7 +103,7 @@ impl Tokens {
         let mut tkn_word = TokenWord::with_capacity(s.len() / chunk_size);
         for chunk in s.chars().collect::<Vec<char>>().chunks(chunk_size) {
             let chunk_str = chunk.iter().collect::<String>();
-            let tkn = self.encode.get(&chunk_str).unwrap().value().clone();
+            let tkn = *self.encode.get(&chunk_str).unwrap().value();
             tkn_word.push(tkn);
         }
         Some(tkn_word)
@@ -164,16 +164,16 @@ impl Extend<Token> for TokenWord {
     }
 }
 
-impl<'a> Into<&'a [Token]> for &'a TokenWord {
+impl<'a> From<&'a TokenWord> for &'a [Token] {
     #[inline]
-    fn into(self) -> &'a [Token] {
-        &self.0
+    fn from(val: &'a TokenWord) -> Self {
+        &val.0
     }
 }
 
-impl Into<TokenWord> for Token {
+impl From<Token> for TokenWord {
     #[inline]
-    fn into(self) -> TokenWord {
-        TokenWord(vec![self])
+    fn from(val: Token) -> Self {
+        TokenWord(vec![val])
     }
 }
