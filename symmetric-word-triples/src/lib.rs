@@ -129,7 +129,6 @@ pub fn symmetric_words_in_file_mt(
     ));
 
     let word_dictionary = prefix_map.get_prefix_words(&TokenWord::new());
-    let word_dictionary = prefix_map.compress_words(word_dictionary);
 
     let size = word_dictionary.len();
 
