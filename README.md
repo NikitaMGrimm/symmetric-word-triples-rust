@@ -14,13 +14,12 @@ The words in each triple can be read either from left to right or from top to bo
 
 ## Usage
 
--Add a list of words to a file called `word_dictionary.txt`. Each word should be on a new line.
+-Make an input and output folder.
+-Add a list of words to the input folder. Each word should be on a new line.
 -Run the program using the cargo run command in your terminal.
--The program will output all word triples with the specified property to a new file called `words_filtered.txt`.
+-The program will output all word triples with the specified property to a new file called in the output directory.
 
 ## Example
-
-Suppose `word_dictionary.txt` contains the following words:
 
 ```
 complaint
@@ -31,7 +30,7 @@ orange
 banana
 ```
 
-Running the program will output the following triples to words_filtered.txt:
+Running the program will output the following:
 
 `complaint placement intention`
 
